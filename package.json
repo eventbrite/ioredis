@@ -1,6 +1,6 @@
 {
   "name": "eb-ioredis",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A robust, performance-focused and full-featured Redis client for Node.js. Forked from ioredis.",
   "main": "built/index.js",
   "files": [

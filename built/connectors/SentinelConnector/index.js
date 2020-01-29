@@ -16,9 +16,6 @@ class SentinelConnector extends AbstractConnector_1.default {
         if (!this.options.sentinels.length) {
             throw new Error("Requires at least one sentinel to connect to.");
         }
-        if (!this.options.name) {
-            throw new Error("Requires the name of master.");
-        }
         this.sentinelIterator = new SentinelIterator_1.default(this.options.sentinels);
     }
     check(info) {
@@ -132,20 +129,49 @@ class SentinelConnector extends AbstractConnector_1.default {
             callback(null);
         });
     }
+    ensureMasterName(client, callback) {
+        if (this.options.name) {
+            return callback(null);
+        }
+        client.sentinel("masters", (err, result) => {
+            if (err) {
+                return callback(err);
+            }
+            if (!result || !result.length) {
+                return callback(new Error("Cannot find any masters"));
+            }
+            const masterData = result[0];
+            const dict = {};
+            for (let i = 0; i < masterData.length; i += 2) {
+                const key = masterData[i];
+                const value = masterData[i + 1];
+                dict[key] = value;
+            }
+            const name = dict["name"];
+            this.options.name = name;
+            return callback(null);
+        });
+    }
     resolveMaster(client, callback) {
-        client.sentinel("get-master-addr-by-name", this.options.name, (err, result) => {
+        this.ensureMasterName(client, err => {
             if (err) {
                 client.disconnect();
                 return callback(err);
             }
-            this.updateSentinels(client, err => {
-                client.disconnect();
+            client.sentinel("get-master-addr-by-name", this.options.name, (err, result) => {
                 if (err) {
+                    client.disconnect();
                     return callback(err);
                 }
-                callback(null, this.sentinelNatResolve(Array.isArray(result)
-                    ? { host: result[0], port: Number(result[1]) }
-                    : null));
+                this.updateSentinels(client, err => {
+                    client.disconnect();
+                    if (err) {
+                        return callback(err);
+                    }
+                    callback(null, this.sentinelNatResolve(Array.isArray(result)
+                        ? { host: result[0], port: Number(result[1]) }
+                        : null));
+                });
             });
         });
     }
