@@ -1,0 +1,5 @@
+registry=https://npm-registry.evbhome.com/
+
+init-author-name="Eventbrite Engineering"
+init-license="UNLICENSED"
+init-version="0.1.0"

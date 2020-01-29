@@ -1,7 +1,7 @@
 {
-  "name": "ioredis",
-  "version": "4.15.1",
-  "description": "A robust, performance-focused and full-featured Redis client for Node.js.",
+  "name": "eb-ioredis",
+  "version": "1.0.0",
+  "description": "A robust, performance-focused and full-featured Redis client for Node.js. Forked from ioredis.",
   "main": "built/index.js",
   "files": [
     "built/"
@@ -32,6 +32,9 @@
   "funding": {
     "type": "opencollective",
     "url": "https://opencollective.com/ioredis"
+  },
+  "publishConfig": {
+    "registry": "http://packages.evbops.com:8889"
   },
   "dependencies": {
     "cluster-key-slot": "^1.1.0",
@@ -71,7 +74,8 @@
     "server-destroy": "^1.0.1",
     "sinon": "^7.3.2",
     "ts-node": "^8.1.0",
-    "typescript": "^3.5.1"
+    "typescript": "^3.5.1",
+    "del-boy": "^1.2.2"
   },
   "engines": {
     "node": ">=6"
